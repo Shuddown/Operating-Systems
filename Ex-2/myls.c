@@ -41,7 +41,7 @@ void list(struct dirent* entry){
 int main(int argc, char* argv[]){
     bool VERBOSE = false;
 
-    if(argc < 2 || argc > 3){
+    if(argc < 1|| argc > 3){
         fprintf(stderr, "Usage: %s [-l] <directory>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
@@ -59,9 +59,12 @@ int main(int argc, char* argv[]){
     }
 
     char* dirname;
+    char buff[1024];
     if (optind < argc)
         dirname = argv[optind];
-    else {
+    else if (argc == 2 && VERBOSE || argc == 1){
+        dirname = getcwd(buff, sizeof(buff));
+    }else {
         fprintf(stderr, "No directory specified\n");
         exit(EXIT_FAILURE);
     }

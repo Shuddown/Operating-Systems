@@ -1,8 +1,10 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include "integer-input.c"
+#include "../utils/integer-input.c"
 #define SIZE(arr) sizeof(arr)/sizeof(arr[0])
 
 typedef struct result {

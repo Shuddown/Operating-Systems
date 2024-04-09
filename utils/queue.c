@@ -35,7 +35,7 @@ void enqueue(Queue* queue, Process* process){
 }
 
 Process* dequeue(Queue* queue){
-    if(is_empty(queue)) return -1;
+    if(is_empty(queue)) return NULL;
     if(is_full(queue)) queue->rear = queue->front;
     Process* process = queue->arr[queue->front++];
     queue->front %= queue->capacity;
@@ -43,7 +43,7 @@ Process* dequeue(Queue* queue){
 }
 
 Process* peek(Queue* queue){
-    if(is_empty(queue)) return -1;
+    if(is_empty(queue)) return NULL;
     return queue->arr[queue->front];
 }
 

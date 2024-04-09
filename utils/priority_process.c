@@ -15,12 +15,13 @@ typedef struct{
 
 typedef struct {
     int p_id;
+    uint16_t priority;
     uint16_t arrival_time;
     uint16_t burst_time;
     Result* result;
 }Process;
 
-Process** get_processes(uint16_t n){
+Process** get_processes_priority(uint16_t n){
     Process** processs =(Process**) malloc(n * sizeof(Process*));
     char buff[1024];
     printf("Number of processes: %u\n", n);
@@ -34,41 +35,18 @@ Process** get_processes(uint16_t n){
         printf("Burst Time: ");
         fgets(buff, sizeof(buff), stdin);
         processs[i]->burst_time = atoi(buff);
+        printf("Priority: ");
+        getIntegerFromStdin(&processs[i]->priority);
         processs[i]->result = NULL;
     }
     return processs;
 } 
 
+
 int process_cmp(const void* p1, const void* p2){
     return ((Process*)p1)->arrival_time - ((Process*)p2)->arrival_time;
 }
 
-void add_gant(int* gant_rep, uint16_t* size, Process* process,int time){
-    gant_rep[(*size)++] = process->p_id;
-    gant_rep[(*size)++] = time; 
-}
-
-void print_ascii(char ascii, uint16_t n){
-    for(uint16_t i = 0; i < n; i++){
-        printf("%c", ascii);
-    }
-}
-
-void print_gant(int* gant_rep, uint16_t size){
-    printf("%d", 0);
-    char ascii_block = (char) 219;
-    uint16_t total_time = gant_rep[size - 1];
-    uint16_t rebased_len = 100;
-    uint16_t prev = 0;
-    for(uint16_t i = 1; i < size; i+=2){
-        printf("%d", prev);
-        print_ascii(' ', ((gant_rep[i] - prev) / total_time) * rebased_len - 2);
-        prev = gant_rep[i];
-    }
-    printf("\n");
-    print_ascii(ascii_block, rebased_len);
-    printf("\n");
-}
 
 void execute_process(Process* process, uint16_t* exec_time){
     process->result = (Result*) malloc(sizeof(Result));
@@ -80,15 +58,16 @@ void execute_process(Process* process, uint16_t* exec_time){
 }
 
 void print_results(Process* processs[], uint16_t size){
-    printf("Process ID\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tResponse Time\n");
+    printf("Process ID\tPriority\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tResponse Time\n");
     uint16_t total_waiting_time = 0;
     uint16_t total_turnaround_time = 0;
     for(uint16_t i = 0; i<size; i++){
         Process* p = processs[i];
         char id[100];
         sprintf(id, "P%d", p->p_id);
-        printf("%10s\t%12d\t%10d\t%12d\t%15d\t%13d\n",
+        printf("%10s\t%8d\t%12d\t%10d\t%12d\t%15d\t%13d\n",
             id,
+            p->priority,
             p->arrival_time,
             p->burst_time,
             p->result->waiting_time,

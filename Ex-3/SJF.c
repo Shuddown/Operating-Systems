@@ -1,10 +1,12 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include "integer-input.c"
-#include "/home/shuddown/Programs/C/OS/utils/priority_queue.c"
-#include "/home/shuddown/Programs/C/OS/utils/process.c"
+#include "../utils/integer-input.c"
+#include "../utils/priority_queue.c"
+#include "../utils/process.c"
 #define SIZE(arr) sizeof(arr)/sizeof(arr[0])
 
 void SJF(Process* processes[], uint16_t size, int* gant_rep, int* gant_size){
