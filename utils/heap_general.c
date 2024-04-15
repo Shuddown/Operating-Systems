@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-
 typedef struct Heap {
     void* base;
     uint16_t count;
@@ -114,4 +113,3 @@ void free_heap(Heap* heap) {
     free(heap->base);
     free(heap);
 }
-

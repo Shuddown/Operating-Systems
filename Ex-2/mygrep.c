@@ -3,14 +3,10 @@
 #include <string.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <pwd.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <dirent.h>
-#include <limits.h>
+#include "../utils/strtoke.c"
 
 int check_line_pattern(const char* pattern, const char* filepath, bool invert, bool number, bool count){
     int fd = open(filepath, O_RDONLY);
@@ -22,14 +18,14 @@ int check_line_pattern(const char* pattern, const char* filepath, bool invert, b
     char buff[1024];
     int match_count = 0;
     while(read(fd, buff, sizeof(buff)) != 0){
-        char * token = strtok(buff, "\n");
+        char * token = strtoke(buff, "\n");
         while( token != NULL ) {
             if((strstr(token, pattern) != NULL) ^ invert){ 
                 if(!count) 
                 number ? printf("%d: %s\n",line_num, token) : printf("%s\n", token);
                 match_count++;
             }
-            token = strtok(NULL, "\n");
+            token = strtoke(NULL, "\n");
             line_num++;
         }
     }
