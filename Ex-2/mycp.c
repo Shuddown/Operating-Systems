@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include "utils/command_utils.c"
+#include "../utils/command_utils.c"
 
 #define SIZE(arr) sizeof(arr)/sizeof(arr[0])
 
@@ -34,12 +34,18 @@ void copy(int fd1, int fd2){
         write(fd2, buffer, count);
 }
 
+
+void clear_input_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 int main(int argc, char* argv[]){
     char valid_tags[] = {'i'};
-    command_info* info = (argc, argv, valid_tags, SIZE(valid_tags));
+    command_info* info = get_ops_args(argc, argv, valid_tags, SIZE(valid_tags));
     if (info->arg_count < 3){
         fprintf(stdout, "The cp command requires two or more arguments!\n");
-        return 1;
+        exit(EXIT_FAILURE);
     }
     bool CHECK = in_char_array('i', info->options, info->op_count);
     char* dst = info->args[info->arg_count - 1];
@@ -53,9 +59,9 @@ int main(int argc, char* argv[]){
                 return 1;
             }
             if((stat(new_file_path, &st) == 0) && CHECK){
-                char ch[1];
+                char ch[1024];
                 printf("The file %s already exists. Do you want to overwrite it? (y/n) \n", new_file_path);
-                fgets(ch, 1, stdin);
+                fgets(ch, sizeof(ch), stdin);
                 if(ch[0] == 'n') continue;
             }
             int fd2 = open(new_file_path, O_WRONLY | O_CREAT, 0664);
@@ -78,9 +84,10 @@ int main(int argc, char* argv[]){
                 char ch[1];
                 printf("The file %s already exists. Do you want to overwrite it? (y/n) \n", info->args[2]);
                 fgets(ch, 1, stdin);
+                clear_input_buffer();
                 if(ch[0] == 'n') return 0;
             }
-            int fd2 = open(info->args[2], O_WRONLY | O_CREAT, 0664);
+            int fd2 = open(info->args[2], O_WRONLY | O_CREAT | O_TRUNC, 0664);
             copy(fd1, fd2);
             close(fd1); 
             close(fd2); 

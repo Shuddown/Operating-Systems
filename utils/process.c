@@ -79,6 +79,25 @@ void execute_process(Process* process, uint16_t* exec_time){
     *exec_time += process->burst_time;
 }
 
+bool execute_process_time(Process* process, int* elapsed_time, uint16_t max_time){
+    Result* result = process->result;
+    if(result == NULL){
+        process->result = (Result*) malloc(sizeof(Result));
+        result = process->result;
+        result->response_time = *elapsed_time;
+        result->waiting_time = 0;
+        result->turnaround_time = process->burst_time;
+    }
+    process->burst_time -= max_time;
+    *elapsed_time += max_time;
+    if(process->burst_time > 0) return false;
+    *elapsed_time += process->burst_time;
+    process->burst_time = result->turnaround_time;
+    result->waiting_time = *elapsed_time - (process->arrival_time + process->burst_time);
+    result->turnaround_time = *elapsed_time - process->arrival_time;
+    return true;
+}
+
 void print_results(Process* processs[], uint16_t size){
     printf("Process ID\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tResponse Time\n");
     uint16_t total_waiting_time = 0;

@@ -1,0 +1,2 @@
+This is just a sample text file.
+It is meant to be overwritten by the outer one.

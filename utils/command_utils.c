@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "utils/array_helpers.c"
+#include "array_helpers.c"
 
 #define MAX_ARG_COUNT 1024
 #define MAX_TAG_COUNT 5
@@ -23,7 +23,6 @@ command_info* get_ops_args(int argc, char* argv[], char* valid_tags, size_t num_
     size_t tag_count = 0;
     for(int i = 0; i < argc; i++){
         if (argv[i][0] == '-'){
-            argc--;
             int char_index = 1;
             char tag;
             while ((tag = argv[i][char_index++]) != '\0') {

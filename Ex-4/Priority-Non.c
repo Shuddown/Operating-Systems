@@ -7,7 +7,7 @@
 #include "../utils/heap_general.c"
 #include "../utils/integer-input.c"
 
-void priority_preemptive(Process** processes, uint16_t count){
+void priority(Process** processes, uint16_t count){
     qsort(processes, count, sizeof(Process*), time_cmp);
     Heap* priority_q = new_heap(count, sizeof(Process*), priority_cmp);
     uint16_t elapsed_time = 0;
@@ -19,7 +19,7 @@ void priority_preemptive(Process** processes, uint16_t count){
         }
         else if(!is_empty(priority_q)) {
             Process* process = (Process*) dequeue(priority_q);
-            bool finished = execute_process_time(process, &elapsed_time, 1);
+            bool finished = execute_process_time(process, &elapsed_time, INT16_MAX);
             if(!finished) enqueue(priority_q, process);
         }
 

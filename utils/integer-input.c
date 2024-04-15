@@ -1,4 +1,5 @@
 // file: integer-input.h
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>

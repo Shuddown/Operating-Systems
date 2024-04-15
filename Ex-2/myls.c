@@ -12,6 +12,50 @@
 #include <dirent.h>
 #include <limits.h>
 
+char* octal_to_str(int permissions){
+    char octal_str[4];
+    sprintf(octal_str, "%o", permissions);
+    char perm_str[10] = {0};
+    for (int i = 0; i < 3; i++){
+        switch (octal_str[i]) {
+        case '0':
+            strcat(perm_str, "---");
+            break;
+        case '1':
+            strcat(perm_str, "--x");
+            break;
+        case '2':
+            strcat(perm_str, "-w-");
+            break;
+        case '3':
+            strcat(perm_str, "-wx");
+            break;
+        case '4':
+            strcat(perm_str, "r--");
+            break;
+        case '5':
+            strcat(perm_str, "r-x");
+            break;
+        case '6':
+            strcat(perm_str, "rw-");
+            break;
+        case '7':
+            strcat(perm_str, "rwx");
+            break;
+        
+        default:
+            break;
+        }
+    }
+    return strdup(perm_str);
+}
+
+char* add_dir_to_perms(bool is_dir,char* perms){
+    char final[11] = {0};
+    is_dir ? strcat(final, "d") : strcat(final, "-");
+    return strdup(strcat(final, perms));
+}
+
 void list_verbose(const char *dirname, struct dirent* entry){
     char path[PATH_MAX];
     snprintf(path, sizeof(path), "%s/%s", dirname, entry->d_name);
@@ -22,8 +66,8 @@ void list_verbose(const char *dirname, struct dirent* entry){
         return;
     }
 
-    printf("%o %ld %s %s %ld %s %s\n",
-        file_stat.st_mode & 0777,
+    printf("%s %ld %s %s %ld %s %s\n",
+        add_dir_to_perms(S_ISDIR(file_stat.st_mode),octal_to_str(file_stat.st_mode & 0777)),
         file_stat.st_nlink,
         getpwuid(file_stat.st_uid)->pw_name,
         getpwuid(file_stat.st_gid)->pw_name,
