@@ -8,12 +8,14 @@
 #include "Priority-Non.c"
 #include "../utils/priority_process.c"
 #include "../utils/integer-input.c"
+#include "../utils/char-input.c"
 #include "Round-Robin.c"
 
-void menu_scheduler(){
+void main(){
     bool EXIT = false;
     do{
-        uint16_t option;
+        int option;
+        int n;
 
         printf("CPU scheduling algorithms\n");
         printf("1. Round Robin\n");
@@ -25,7 +27,6 @@ void menu_scheduler(){
         switch (option) {
             case 1:
                 int quanta;
-                int n;
                 printf("Round Robin Scheduler\n");
                 printf("What is the time quanta you'd like: ");
                 getIntegerFromStdin(&quanta);
@@ -37,30 +38,28 @@ void menu_scheduler(){
                 break;
             
             case 2: 
-                int n;
-                char letter;
 
-                printf("Priority Scheduler");
+                printf("Priority Scheduler\n");
                 printf("a. Non Premptive Priority\n");
                 printf("b. Premptive Priority\n");
-                printf("Enter your option:");
-                letter = getchar();
+                printf("Enter your option: ");
+                char valid_chars[] = {'a', 'b'};
+                char letter = get_char(valid_chars,sizeof(valid_chars));
+                printf("What is the number of processes: ");
+                getIntegerFromStdin(&n);
+                struct priority_process** processs = get_processes_priority(n);
+
                 switch (letter) {
 
                     case 'a':
-                        printf("What is the number of processes: ");
-                        getIntegerFromStdin(&n);
-                        struct priority_process** processes = get_processes_priority(n);
-                        priority(processes, n);
-                        print_results_priority(processes, n);
+                        priority(processs, n);
+                        print_results_priority(processs, n);
                         break;
                     
                     case 'b': 
-                        printf("What is the number of processes: ");
-                        getIntegerFromStdin(&n);
-                        struct priority_process** processes = get_processes_priority(n);
-                        priority_preemptive(processes, n);
-                        print_results_priority(processes, n);
+                        priority_preemptive(processs, n);
+                        print_results_priority(processs, n);
+                        break;
                     
 
                     default:

@@ -9,8 +9,7 @@
 #include "../utils/process.c"
 #define SIZE(arr) sizeof(arr)/sizeof(arr[0])
 
-void SJF(Process* processes[], uint16_t size, int* gant_rep, int* gant_size){
-    uint16_t gant_size = 0;
+void SJF(Process* processes[], uint16_t size){
     qsort(processes, size, sizeof(Process*), &process_cmp);
     Heap* priority_q = new_heap(size);
     uint16_t elapsed_time = 0;
@@ -23,7 +22,6 @@ void SJF(Process* processes[], uint16_t size, int* gant_rep, int* gant_size){
         else if(!is_empty(priority_q)) {
             Process* process = dequeue(priority_q);
             execute_process(process, &elapsed_time);
-            add_gant(gant_rep,gant_size, process, elapsed_time);
         }
 
         else elapsed_time++;
@@ -31,19 +29,5 @@ void SJF(Process* processes[], uint16_t size, int* gant_rep, int* gant_size){
     while(!is_empty(priority_q)){
         Process *process = dequeue(priority_q);
         execute_process(process, &elapsed_time);
-        add_gant(gant_rep, gant_size, process, elapsed_time);
     }
-}
-
-int main(){
-    int n;
-    printf("Give the number of processes: ");
-    getIntegerFromStdin(&n);
-    Process** processes = get_processes(n);
-    uint16_t gant_rep[100];
-    uint16_t gant_size = 0;
-    SJF(processes, n, gant_rep, &gant_size);
-    print_gant(gant_rep, gant_size);
-    print_results(processes, n);
-    return 0;
 }

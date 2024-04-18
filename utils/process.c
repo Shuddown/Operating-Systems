@@ -16,7 +16,7 @@ typedef struct{
 typedef struct {
     int p_id;
     uint16_t arrival_time;
-    uint16_t burst_time;
+    int burst_time;
     Result* result;
 }Process;
 
@@ -43,33 +43,6 @@ int process_cmp(const void* p1, const void* p2){
     return ((Process*)p1)->arrival_time - ((Process*)p2)->arrival_time;
 }
 
-void add_gant(int* gant_rep, uint16_t* size, Process* process,int time){
-    gant_rep[(*size)++] = process->p_id;
-    gant_rep[(*size)++] = time; 
-}
-
-void print_ascii(char ascii, uint16_t n){
-    for(uint16_t i = 0; i < n; i++){
-        printf("%c", ascii);
-    }
-}
-
-void print_gant(int* gant_rep, uint16_t size){
-    printf("%d", 0);
-    char ascii_block = (char) 219;
-    uint16_t total_time = gant_rep[size - 1];
-    uint16_t rebased_len = 100;
-    uint16_t prev = 0;
-    for(uint16_t i = 1; i < size; i+=2){
-        printf("%d", prev);
-        print_ascii(' ', ((gant_rep[i] - prev) / total_time) * rebased_len - 2);
-        prev = gant_rep[i];
-    }
-    printf("\n");
-    print_ascii(ascii_block, rebased_len);
-    printf("\n");
-}
-
 void execute_process(Process* process, uint16_t* exec_time){
     process->result = (Result*) malloc(sizeof(Result));
     Result* result = process->result;
@@ -79,7 +52,7 @@ void execute_process(Process* process, uint16_t* exec_time){
     *exec_time += process->burst_time;
 }
 
-bool execute_process_time(Process* process, int* elapsed_time, uint16_t max_time){
+bool execute_process_time(Process* process, uint16_t* elapsed_time, uint16_t max_time){
     Result* result = process->result;
     if(result == NULL){
         process->result = (Result*) malloc(sizeof(Result));

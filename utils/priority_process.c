@@ -11,23 +11,23 @@ typedef struct{
     uint16_t waiting_time;
     uint16_t turnaround_time;
     uint16_t response_time;
-}Result;
+}Priority_Result;
 
 typedef struct priority_process{
     int p_id;
-    uint16_t priority;
+    int priority;
     uint16_t arrival_time;
-    uint16_t burst_time;
-    Result* result;
-}Process;
+    int burst_time;
+    Priority_Result* result;
+}Priority_Process;
 
-Process** get_processes_priority(uint16_t n){
-    Process** processs =(Process**) malloc(n * sizeof(Process*));
+Priority_Process** get_processes_priority(uint16_t n){
+    Priority_Process** processs =(Priority_Process**) malloc(n * sizeof(Priority_Process*));
     char buff[1024];
     printf("Number of processes: %u\n", n);
     for(int i = 0; i<n; i++){
-        processs[i] = (Process*) malloc(sizeof(Process));
-        printf("Process Id: ");
+        processs[i] = (Priority_Process*) malloc(sizeof(Priority_Process));
+        printf("Priority_Process Id: ");
         getIntegerFromStdin(&processs[i]->p_id);
         printf("Arrival Time: ");
         fgets(buff, sizeof(buff), stdin);
@@ -44,26 +44,30 @@ Process** get_processes_priority(uint16_t n){
 
 
 int priority_cmp(const void* p1, const void* p2){
-    return ((Process*)p1)->arrival_time - ((Process*)p2)->arrival_time;
+    return ((Priority_Process*)p1)->priority - ((Priority_Process*)p2)->priority;
 }
 
 int time_cmp(const void* p1, const void* p2){
-    return ((Process*)p1)->arrival_time - ((Process*)p2)->arrival_time;
+    Priority_Process* a =  *(Priority_Process**) p1;
+    Priority_Process* b =  *(Priority_Process**) p2;
+    if(a->arrival_time < b->arrival_time) return -1;
+    else if(a->arrival_time > b->arrival_time) return 1;
+    return 0;
 }
 
-void execute_process(Process* process, uint16_t* exec_time){
-    process->result = (Result*) malloc(sizeof(Result));
-    Result* result = process->result;
+void execute_process_priority(Priority_Process* process, uint16_t* exec_time){
+    process->result = (Priority_Result*) malloc(sizeof(Priority_Result));
+    Priority_Result* result = process->result;
     result->waiting_time = *exec_time - process->arrival_time;
     result->response_time = result->waiting_time;
     result->turnaround_time = result->waiting_time + process->burst_time;
     *exec_time += process->burst_time;
 }
 
-bool execute_process_time(Process* process, int* elapsed_time, uint16_t max_time){
-    Result* result = process->result;
+bool execute_process_time_priority(Priority_Process* process, uint16_t* elapsed_time, uint16_t max_time){
+    Priority_Result* result = process->result;
     if(result == NULL){
-        process->result = (Result*) malloc(sizeof(Result));
+        process->result = (Priority_Result*) malloc(sizeof(Priority_Result));
         result = process->result;
         result->response_time = *elapsed_time;
         result->waiting_time = 0;
@@ -80,12 +84,12 @@ bool execute_process_time(Process* process, int* elapsed_time, uint16_t max_time
 }
 
 
-void print_results_priority(Process* processs[], uint16_t size){
+void print_results_priority(Priority_Process* processs[], uint16_t size){
     printf("Process ID\tPriority\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tResponse Time\n");
     uint16_t total_waiting_time = 0;
     uint16_t total_turnaround_time = 0;
     for(uint16_t i = 0; i<size; i++){
-        Process* p = processs[i];
+        Priority_Process* p = processs[i];
         char id[100];
         sprintf(id, "P%d", p->p_id);
         printf("%10s\t%8d\t%12d\t%10d\t%12d\t%15d\t%13d\n",

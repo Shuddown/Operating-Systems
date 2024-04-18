@@ -5,14 +5,15 @@
 #include <stdint.h>
 
 #include "SJF.c"
-#include "q1.c"
+#include "fcfs.c"
 #include "../utils/integer-input.c"
+#include "../utils/char-input.c"
 #include "SJF_preemptive.c"
 
-void menu_scheduler(){
+void main(){
     bool EXIT = false;
     do{
-        uint16_t option;
+        int option;
         void (*scheduler) (Process* processes[], uint16_t size);
 
         printf("CPU scheduling algorithms\n");
@@ -29,13 +30,12 @@ void menu_scheduler(){
                 break;
             
             case 2: 
-                char letter;
-
                 printf("SJF CPU scheduler\n");
                 printf("a. Non Premptive SJF\n");
                 printf("b. Premptive SJF\n");
                 printf("Enter your option:");
-                letter = getchar();
+                char valid_chars[] = {'a', 'b'};
+                char letter = get_char(valid_chars,sizeof(valid_chars));
                 switch (letter) {
                     case 'a':
                         scheduler = &SJF;
@@ -43,6 +43,7 @@ void menu_scheduler(){
                     
                     case 'b': 
                         scheduler = &SJF_premptive;
+                        break;
                     
 
                     default:
@@ -59,8 +60,8 @@ void menu_scheduler(){
                 printf("Not a valid option!\n");
                 break;
         }
-        if(!EXIT) return;
-        uint16_t n;
+        if(EXIT) return;
+        int n;
         printf("Number of processes: ");
         getIntegerFromStdin(&n);
         Process** processes = get_processes(n);

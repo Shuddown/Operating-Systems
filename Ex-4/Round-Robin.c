@@ -49,11 +49,3 @@ void round_robin(Process** processes, uint16_t size,uint16_t timer_max){
             enqueue(process_q, process);
     }
 }
-
-int main(){
-    int n = 5;
-    Process** processes = get_processes(n);
-    round_robin(processes, n, 1);
-    print_results(processes, n);
-    return 0;
-}
