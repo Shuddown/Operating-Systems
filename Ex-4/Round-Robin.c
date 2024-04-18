@@ -39,7 +39,13 @@ void round_robin(Process** processes, uint16_t size,uint16_t timer_max){
         }else if(!is_empty(process_q)){
             Process* process = dequeue(process_q);
             bool finished = execute_process_rr(process, &elapsed_time, timer_max);
-            if(!finished) enqueue(process_q, process);
+            if(!finished){
+                while(process_index < size && processes[process_index]->arrival_time <= elapsed_time){
+                    enqueue(process_q, processes[process_index]);
+                    process_index++;
+                }
+                enqueue(process_q, process); 
+            } 
         }else elapsed_time++;
     }
     while(!is_empty(process_q)){
