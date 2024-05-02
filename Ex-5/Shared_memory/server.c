@@ -23,7 +23,7 @@ typedef struct {
 int main(){
     char buff[BUFF_SIZE];
 
-    key_t mem_key = ftok("Ex-5/shared.bin", 'b');
+    key_t mem_key = ftok("/tmp", 'b');
     printf("%d\n", mem_key);
     if(mem_key == -1){
         perror("Error: ");

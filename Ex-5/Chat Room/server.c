@@ -64,7 +64,7 @@ int main(){
     char buff[MSG_SIZE];
 
     pid_t pid = getpid();
-    key_t key = ftok("/tmp", 'f');
+    key_t key = ftok("/tmp", 'e');
     printf("%d\n", key);
     int shmid = shmget(key, MSG_SIZE*2, 0);
     if(shmid == -1){

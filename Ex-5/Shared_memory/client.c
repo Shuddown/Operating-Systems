@@ -22,7 +22,7 @@ typedef struct {
 
 int main(){
     char buff[BUFF_SIZE];
-    key_t mem_key = ftok("Ex-5/shared.bin",'b');
+    key_t mem_key = ftok("/tmp",'b');
     printf("%d\n", mem_key);
     int shmid = shmget(mem_key, BUFF_SIZE, IPC_CREAT | IPC_EXCL | 0664);
     if(shmid == -1){

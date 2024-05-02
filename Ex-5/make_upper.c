@@ -11,7 +11,7 @@
 
 int main(){
     char name_buff[1024];
-    int shmid = shmget(IPC_PRIVATE, sizeof(name_buff), 0);
+    int shmid = shmget(IPC_PRIVATE, sizeof(name_buff), IPC_CREAT | IPC_EXCL | 0664);
     pid_t p_id = fork();
     if(p_id > 0){
         char* addr = shmat(shmid, NULL, 0);

@@ -56,15 +56,15 @@ int main(){
         perrorc("Error with message signal: ");
     if(signal(KILL_SIG, on_exit_signal) == SIG_ERR)
         perrorc("Error with kill signal: ");
-    // if(signal(SIGSEGV, on_exit_signal) == SIG_ERR)
-    //     perrorc("Error with kill signal: ");
-    // if(signal(SIGINT, on_exit_signal) == SIG_ERR)
-    //     perrorc("Error with kill");
+    if(signal(SIGSEGV, on_exit_signal) == SIG_ERR)
+        perrorc("Error with kill signal: ");
+    if(signal(SIGINT, on_exit_signal) == SIG_ERR)
+        perrorc("Error with kill");
 
     char buff[MSG_SIZE];
 
     pid_t pid = getpid();
-    key_t key = ftok("/tmp", 'f');
+    key_t key = ftok("/tmp", 'e');
     printf("%d\n", key);
     int shmid = shmget(key, MSG_SIZE*2, IPC_CREAT | IPC_EXCL | 0664);
     if(shmid == -1){
