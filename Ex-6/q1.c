@@ -34,7 +34,7 @@ int main(){
     }
     Shared_Memory* sem_mem = mem;
     if(sem_init(&sem_mem->mutex, 1, 1) == -1) perror("Semaphore initation error: ");
-    if(sem_init(&sem_mem->empty, 1, BUFF_SIZE) == -1) perror("Semaphore initation error: ");
+    if(sem_init(&sem_mem->empty, 1, SMOL_SIZE) == -1) perror("Semaphore initation error: ");
     if(sem_init(&sem_mem->full, 1, 0) == -1) perror("Semaphore initation error: ");
     sem_mem->done = false;
 
@@ -50,29 +50,43 @@ int main(){
         printf("Give a word to produce: ");
         fgets(buff, sizeof(buff), stdin);
         buff[strlen(buff) - 1] = '\0';
-        for(int i = 0; i < strlen(buff); i++){
+        for(int i = 0; i < strlen(buff) + 1; i++){
             sem_wait(&sem_mem->empty);
+            printf("Producer aquired semphore Empty\n");
             sem_wait(&sem_mem->mutex);
-            printf("%c produced!\n", buff[i]);
+            printf("Producer aquired semphore Mutex\n");
             sem_mem->buff[i % SMOL_SIZE] = buff[i];
-            sem_post(&sem_mem->full);
+            printf("Producer produced %c!\n", buff[i]);
             sem_post(&sem_mem->mutex);
+            printf("Producer released semphore Mutex\n");
+            sem_post(&sem_mem->full);
+            printf("Producer released semphore Full\n");
         }
         sem_mem->done = true;
         wait(NULL);
     }
 
     else if(pid == 0){
+        char consumed[BUFF_SIZE + 1];
         printf("In the child (consumer)\n");
         int out = 0;
-        while(sem_mem->done == false){
+        int val;
+        while(true){
+            sem_getvalue(&sem_mem->full, &val);
+            if(sem_mem->done && (val == 0)) break;
             sem_wait(&sem_mem->full);
+            printf("Producer aquired semphore Full\n");
             sem_wait(&sem_mem->mutex);
-            printf("Consumed %c!\n", sem_mem->buff[out]);
-            out = (out + 1) % SMOL_SIZE;
-            sem_post(&sem_mem->empty);
+            printf("Producer aquired semphore Mutex\n");
+            consumed[out] = sem_mem->buff[out % SMOL_SIZE];
+            printf("Consumer consumed %c!\n", consumed[out]);
+            out++;
             sem_post(&sem_mem->mutex);
+            printf("Producer released semphore Mutex\n");
+            sem_post(&sem_mem->empty);
+            printf("Producer released semphore Empty\n");
         }
+        printf("%s\n", consumed);
         exit(0);
     }
 
