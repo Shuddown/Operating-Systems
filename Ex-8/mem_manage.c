@@ -4,3 +4,11 @@
 #include <stdbool.h>
 #include "../utils/linked_list.c"
 
+
+int main(){
+
+
+    
+
+    return 0;
+}
