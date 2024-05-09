@@ -75,16 +75,16 @@ int main(){
             sem_getvalue(&sem_mem->full, &val);
             if(sem_mem->done && (val == 0)) break;
             sem_wait(&sem_mem->full);
-            printf("Producer aquired semphore Full\n");
+            printf("Consumer aquired semphore Full\n");
             sem_wait(&sem_mem->mutex);
-            printf("Producer aquired semphore Mutex\n");
+            printf("Consumer aquired semphore Mutex\n");
             consumed[out] = sem_mem->buff[out % SMOL_SIZE];
             printf("Consumer consumed %c!\n", consumed[out]);
             out++;
             sem_post(&sem_mem->mutex);
-            printf("Producer released semphore Mutex\n");
+            printf("Consumer released semphore Mutex\n");
             sem_post(&sem_mem->empty);
-            printf("Producer released semphore Empty\n");
+            printf("Consumer released semphore Empty\n");
         }
         printf("%s\n", consumed);
         exit(0);

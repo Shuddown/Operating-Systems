@@ -41,3 +41,4 @@ bool in_str_array(char* str, char** arr, size_t size){
     }
     return false;
 }
+
