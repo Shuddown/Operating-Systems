@@ -20,6 +20,11 @@ ListNode* create_node(int id,int start,int end, ListNode* next){
     return new_node;
 }
 
+int mem_size(ListNode* node){
+    if(node == NULL) return __INT_MAX__;
+    return node->endaddr - node->startaddr;
+}
+
 
 ListNode** new_linked_list(){
     ListNode** head = (ListNode**) malloc(sizeof(ListNode*));
@@ -31,9 +36,14 @@ void insert_begin(ListNode** head, int id,int start,int end){
     *head = create_node(id, start, end, *head);
 }
 
-void insert_middle(ListNode** head, size_t index, int id, int start, int end){
+void insert_middle(ListNode** head, int addr, int id, int start, int end){
+    if(*head == NULL){
+        insert_begin(head, id, start, end);
+        return;
+    }
+
     ListNode** tracer = head;
-    for(size_t i = 0; i<index && *tracer; i++){
+    for(size_t i = 0; *tracer && (*tracer)->startaddr < addr; i++){
         tracer = &(*tracer)->next;
     }
     *tracer = create_node(id, start, end, *tracer);
@@ -89,6 +99,47 @@ ListNode* del_id(ListNode** head, int id){
     return found_val;
 }
 
+ListNode* find_size(ListNode** head, int size){
+    if(*head == NULL) return;
+
+    ListNode** tracer = head;
+    while((*tracer) && mem_size(*tracer) < size){
+        tracer = &(*tracer)->next;
+    }
+    if((*tracer) == NULL) return NULL;
+    ListNode* found_val = *tracer;
+    return found_val;
+}
+
+ListNode* find_best(ListNode** head, int size){
+    if(*head == NULL) return;
+
+    ListNode** tracer = head;
+    ListNode* best = NULL;
+    while((*tracer)){
+        if(mem_size(*tracer) > size && mem_size(*tracer) < mem_size(best)){
+            best = *tracer;
+        }
+        tracer = &(*tracer)->next;
+    }
+    return best;
+}
+
+ListNode* find_worst(ListNode** head, int size){
+    if(*head == NULL) return;
+
+    ListNode** tracer = head;
+    ListNode* worst = NULL;
+    while((*tracer)){
+        if(mem_size(*tracer) > size && mem_size(*tracer) > mem_size(worst)){
+            worst = *tracer;
+        }
+        tracer = &(*tracer)->next;
+    }
+    return worst;
+}
+
+
 void del_end(ListNode** head){
     if(*head == NULL) return;    
 
@@ -109,6 +160,16 @@ void del_list(ListNode** head){
         curr = next;
     }
     free(head);
+}
+
+int len(ListNode** head){
+    ListNode* curr = *head;
+    int count = 0;
+    while(curr != NULL){
+        count += 1;
+        curr = curr->next;
+    }
+    return curr;
 }
 
 
