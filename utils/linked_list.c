@@ -87,7 +87,7 @@ void del_middle(ListNode** head, size_t index){
 }
 
 ListNode* del_id(ListNode** head, int id){
-    if(*head == NULL) return;
+    if(*head == NULL) return NULL;
 
     ListNode** tracer = head;
     while((*tracer) && (*tracer)->pid != id){
@@ -100,7 +100,7 @@ ListNode* del_id(ListNode** head, int id){
 }
 
 ListNode* find_size(ListNode** head, int size){
-    if(*head == NULL) return;
+    if(*head == NULL) return NULL;
 
     ListNode** tracer = head;
     while((*tracer) && mem_size(*tracer) < size){
@@ -112,7 +112,7 @@ ListNode* find_size(ListNode** head, int size){
 }
 
 ListNode* find_best(ListNode** head, int size){
-    if(*head == NULL) return;
+    if(*head == NULL) return NULL;
 
     ListNode** tracer = head;
     ListNode* best = NULL;
@@ -126,7 +126,7 @@ ListNode* find_best(ListNode** head, int size){
 }
 
 ListNode* find_worst(ListNode** head, int size){
-    if(*head == NULL) return;
+    if(*head == NULL) return NULL;
 
     ListNode** tracer = head;
     ListNode* worst = NULL;
@@ -169,7 +169,7 @@ int len(ListNode** head){
         count += 1;
         curr = curr->next;
     }
-    return curr;
+    return count;
 }
 
 

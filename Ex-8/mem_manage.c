@@ -15,12 +15,16 @@ void print_free(ListNode** free_pool){
 
     ListNode* curr = *free_pool;
     while(curr != NULL){
-        printf("|H      ");        
+        printf("|H      ");
+        curr = curr->next;        
     }
     printf("|\n");
-    while(curr != NULL){
-        printf("%-6d", curr->startaddr);        
+    curr = *free_pool;
+    while(curr->next != NULL){
+        printf("%-8d", curr->startaddr);        
+        curr = curr->next;
     }
+    printf("%-8d", curr->startaddr);        
     printf("%d\n", curr->endaddr);
 }
 
@@ -33,12 +37,16 @@ void print_allocated(ListNode** allocated){
     ListNode* curr = *allocated;
     int i = 0;
     while(curr != NULL){
-        printf("|P%-6d", curr->pid);        
+        printf("|P%-8d", curr->pid);        
+        curr = curr->next;
     }
+    curr = *allocated;
     printf("|\n");
-    while(curr != NULL){
-        printf("%-6d", curr->startaddr);        
+    while(curr->next != NULL){
+        printf("%-8d", curr->startaddr);        
+        curr = curr->next;
     }
+    printf("%-8d", curr->startaddr);
     printf("%d\n", curr->endaddr);
 }
 
@@ -51,32 +59,32 @@ void print_mem(ListNode** free_pool, ListNode** allocated){
     int count = 0;
     while(curr_a != NULL && curr_f != NULL){
         if(curr_a->startaddr < curr_f->startaddr){
-            printf("P%-6d", curr_a->startaddr);
-            curr_a = curr_a->next;
+            printf("P%-8d", curr_a->pid);
             indices[count++] = curr_a->startaddr;
+            curr_a = curr_a->next;
         }
 
-        if(curr_f->startaddr < curr_a->startaddr){
-            printf("|H      ", curr_f->startaddr);
-            curr_f = curr_f->next;
+        else{
+            printf("|H      ");
             indices[count++] = curr_f->startaddr;
+            curr_f = curr_f->next;
         }
     }
 
     while(curr_a != NULL){
-            printf("P%-6d", curr_a->startaddr);
-            curr_a = curr_a->next;
+            printf("P%-8d", curr_a->pid);
             indices[count++] = curr_a->startaddr;
+            curr_a = curr_a->next;
     }
 
     while(curr_f != NULL){
-            printf("|H      ", curr_f->startaddr);
-            curr_f = curr_f->next;
+            printf("|H      ");
             indices[count++] = curr_f->startaddr;
+            curr_f = curr_f->next;
     }
     printf("\n");
     for(int i = 0; i < count; i++){
-        printf("%-6d", indices[i]);
+        printf("%-8d", indices[i]);
     }
     printf("\n");
 }
@@ -89,10 +97,10 @@ void allocate(char algo, ListNode** free_pool, ListNode** allocated){
     int size;
     printf("What is the size needed: ");
     getIntegerFromStdin(&size);
-
+    ListNode* found_node;
     switch(algo){
         case 'f':
-            ListNode* found_node = find_size(free_pool, size);
+            found_node = find_size(free_pool, size);
             if(found_node == NULL){
                 printf("No space left to allocate!\n");
                 return;
@@ -102,7 +110,7 @@ void allocate(char algo, ListNode** free_pool, ListNode** allocated){
             found_node->startaddr += size;
             break;
         case 'b':
-            ListNode* found_node = find_best(free_pool, size);
+            found_node = find_best(free_pool, size);
             if(found_node == NULL){
                 printf("No space left to allocate!\n");
                 return;
@@ -112,7 +120,7 @@ void allocate(char algo, ListNode** free_pool, ListNode** allocated){
             found_node->startaddr += size;
             break;
         case 'w':
-            ListNode* found_node = find_worst(free_pool, size);
+            found_node = find_worst(free_pool, size);
             if(found_node == NULL){
                 printf("No space left to allocate!\n");
                 return;
@@ -132,7 +140,7 @@ void deallocate(ListNode** free_pool, ListNode** allocated){
     int id;
     getIntegerFromStdin(&id);
     ListNode* del = del_id(allocated, id);
-    if(del == id){
+    if(del == NULL){
         printf("Process not present!\n");
         return;
     }
@@ -140,7 +148,17 @@ void deallocate(ListNode** free_pool, ListNode** allocated){
     
 }
 
-
+void coalesce_hole(ListNode** free_pool){
+    ListNode* curr = *free_pool;
+    ListNode* next;
+    while(curr != NULL && (next = curr->next) != NULL){
+        if(curr->endaddr == next->startaddr){
+            curr->endaddr = next->endaddr;
+            curr->next = next->next;
+            free(next);
+        }else curr = curr->next;
+    }
+}
 
 int main(){
 
@@ -149,7 +167,7 @@ int main(){
 
 
     char buff[BUFF_SIZE];
-    printf("Enter the memory representation: ");
+    printf("Enter the memory representation\n");
     printf("Enter the number of partitions in memory: ");
     int partitions;
     getIntegerFromStdin(&partitions);
@@ -157,7 +175,7 @@ int main(){
         printf("Starting and ending address of partition %d: ",i);
         fgets(buff, sizeof(buff), stdin);
         int start = atoi(buff);
-        int end = atoi(buff);
+        int end = atoi(strchr(buff, ' '));
         insert_end(free_pool, i, start, end);
     }
 
